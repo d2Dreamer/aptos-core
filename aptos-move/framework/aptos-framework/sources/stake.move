@@ -972,26 +972,34 @@ module aptos_framework::stake {
     ) acquires StakePool, AptosCoinCapabilities, ValidatorConfig {
         let stake_pool = borrow_global_mut<StakePool>(pool_address);
         let validator_config = borrow_global<ValidatorConfig>(pool_address);
+        spec {
+            assume validator_config.validator_index < len(validator_perf.validators);
+        };
         let cur_validator_perf = vector::borrow(&validator_perf.validators, validator_config.validator_index);
         let num_successful_proposals = cur_validator_perf.successful_proposals;
+        spec {
+            assume cur_validator_perf.successful_proposals + cur_validator_perf.failed_proposals <= MAX_U64;
+        };
         let num_total_proposals = cur_validator_perf.successful_proposals + cur_validator_perf.failed_proposals;
-
         let (rewards_rate, rewards_rate_denominator) = staking_config::get_reward_rate(staking_config);
-        let rewards_amount = distribute_rewards(
+        let rewards_active = distribute_rewards(
              &mut stake_pool.active,
             num_successful_proposals,
             num_total_proposals,
             rewards_rate,
             rewards_rate_denominator
         );
-        rewards_amount = rewards_amount + distribute_rewards(
+        let rewards_pending_inactive = distribute_rewards(
             &mut stake_pool.pending_inactive,
             num_successful_proposals,
             num_total_proposals,
             rewards_rate,
             rewards_rate_denominator
         );
-
+        spec {
+            assume rewards_active + rewards_pending_inactive <= MAX_U64;
+        };
+        let rewards_amount = rewards_active + rewards_pending_inactive;
         // Pending active stake can now be active.
         coin::merge<AptosCoin>(&mut stake_pool.active, coin::extract_all<AptosCoin>(&mut stake_pool.pending_active));
 
