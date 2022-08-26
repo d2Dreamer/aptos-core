@@ -9,6 +9,7 @@ module aptos_token::token_coin_swap {
     use aptos_std::table::{Self, Table};
     use aptos_framework::coin;
     use aptos_framework::timestamp;
+    use aptos_framework::status;
     use aptos_std::type_info::{Self, TypeInfo};
     use aptos_token::token::{Self, Token, TokenId, deposit_token, withdraw_token, merge, split};
 
@@ -258,6 +259,7 @@ module aptos_token::token_coin_swap {
     public entry fun test_exchange_coin_for_token(token_owner: signer, coin_owner: signer, aptos_framework: signer) acquires TokenStoreEscrow, TokenListings {
         timestamp::set_time_has_started_for_testing(&aptos_framework);
         timestamp::update_global_time_for_test(10000000);
+        status::set_genesis_end_for_test(&aptos_framework);
         let token_id = token::create_collection_and_token(&token_owner, 100, 100, 100);
         token::initialize_token_store(&coin_owner);
         coin::create_fake_money(&coin_owner, &token_owner, 100);

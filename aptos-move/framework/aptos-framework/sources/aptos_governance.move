@@ -31,6 +31,7 @@ module aptos_framework::aptos_governance {
     use aptos_framework::aptos_coin::AptosCoin;
     use aptos_framework::timestamp;
     use aptos_framework::voting;
+    use aptos_framework::status;
 
     /// The specified stake pool does not have sufficient stake to create a proposal
     const EINSUFFICIENT_PROPOSER_STAKE: u64 = 1;
@@ -543,6 +544,7 @@ module aptos_framework::aptos_governance {
         use aptos_framework::aptos_coin::{Self, AptosCoin};
 
         timestamp::set_time_has_started_for_testing(aptos_framework);
+        status::set_genesis_end_for_test(aptos_framework);
 
         // Initialize the governance.
         staking_config::initialize_for_test(aptos_framework, 0, 1000, 2000, true, 0, 1, 100);

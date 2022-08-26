@@ -9,6 +9,7 @@ module aptos_framework::reconfiguration {
     use aptos_framework::timestamp;
     use aptos_framework::stake;
     use aptos_framework::state_storage;
+    use aptos_framework::status;
 
     friend aptos_framework::aptos_governance;
     friend aptos_framework::block;
@@ -89,7 +90,7 @@ module aptos_framework::reconfiguration {
     /// Signal validators to start using new configuration. Must be called from friend config modules.
     public(friend) fun reconfigure() acquires Configuration {
         // Do not do anything if genesis has not finished.
-        if (timestamp::is_genesis() || timestamp::now_microseconds() == 0 || !reconfiguration_enabled()) {
+        if (status::is_genesis() || timestamp::now_microseconds() == 0 || !reconfiguration_enabled()) {
             return
         };
 
