@@ -10,24 +10,41 @@
 //! ```
 //!
 
-use crate::pruner::pruner_metadata::{PrunerMetadata, PrunerTag};
 use crate::schema::DB_METADATA_CF_NAME;
 use anyhow::{anyhow, Result};
+use aptos_types::transaction::Version;
 use byteorder::ReadBytesExt;
+use num_derive::{FromPrimitive, ToPrimitive};
 use num_traits::{FromPrimitive, ToPrimitive};
 use schemadb::{
     define_schema,
     schema::{KeyCodec, ValueCodec},
 };
+use serde::{Deserialize, Serialize};
+
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[cfg_attr(any(test, feature = "fuzzing"), derive(proptest_derive::Arbitrary))]
+pub(crate) enum DbMetadata {
+    LatestVersion(Version),
+}
+
+#[derive(Clone, Debug, Deserialize, FromPrimitive, PartialEq, ToPrimitive, Serialize)]
+#[cfg_attr(any(test, feature = "fuzzing"), derive(proptest_derive::Arbitrary))]
+#[repr(u8)]
+pub enum DbMetadataTag {
+    LedgerPrunerProgress = 0,
+    StateMerklePrunerProgress = 1,
+    EpochEndingStateMerklePrunerProgress = 2,
+}
 
 define_schema!(
-    PrunerMetadataSchema,
-    PrunerTag,
-    PrunerMetadata,
+    DbMetadataSchema,
+    DbMetadataTag,
+    DbMetadata,
     DB_METADATA_CF_NAME
 );
 
-impl KeyCodec<PrunerMetadataSchema> for PrunerTag {
+impl KeyCodec<DbMetadataSchema> for DbMetadataTag {
     fn encode_key(&self) -> Result<Vec<u8>> {
         Ok(vec![self.to_u8().unwrap()])
     }
@@ -37,7 +54,7 @@ impl KeyCodec<PrunerMetadataSchema> for PrunerTag {
     }
 }
 
-impl ValueCodec<PrunerMetadataSchema> for PrunerMetadata {
+impl ValueCodec<DbMetadataSchema> for DbMetadata {
     fn encode_value(&self) -> Result<Vec<u8>> {
         Ok(bcs::to_bytes(self)?)
     }

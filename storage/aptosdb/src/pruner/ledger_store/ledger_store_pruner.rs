@@ -1,9 +1,10 @@
 // Copyright (c) Aptos
 // SPDX-License-Identifier: Apache-2.0
 
-use crate::pruner::pruner_metadata::{PrunerMetadata, PrunerTag};
+use crate::db_metadata::DbMetadataSchema;
 use crate::pruner::state_store::state_value_pruner::StateValuePruner;
-use crate::pruner_metadata::PrunerMetadataSchema;
+use crate::schema::db_metadata::DbMetadata;
+use crate::schema::db_metadata::DbMetadataTag;
 use crate::{
     metrics::PRUNER_LEAST_READABLE_VERSION,
     pruner::{
@@ -48,9 +49,9 @@ impl DBPruner for LedgerPruner {
         // Collect the schema batch writes
         let mut db_batch = SchemaBatch::new();
         let current_target_version = self.prune_inner(max_versions, &mut db_batch)?;
-        db_batch.put::<PrunerMetadataSchema>(
-            &PrunerTag::LedgerPruner,
-            &PrunerMetadata::LatestVersion(current_target_version),
+        db_batch.put::<DbMetadataSchema>(
+            &DbMetadataTag::LedgerPrunerProgress,
+            &DbMetadata::LatestVersion(current_target_version),
         )?;
         // Commit all the changes to DB atomically
         self.db.write_schemas(db_batch)?;
@@ -65,9 +66,9 @@ impl DBPruner for LedgerPruner {
     fn initialize_min_readable_version(&self) -> anyhow::Result<Version> {
         Ok(self
             .db
-            .get::<PrunerMetadataSchema>(&PrunerTag::LedgerPruner)?
+            .get::<DbMetadataSchema>(&DbMetadataTag::LedgerPrunerProgress)?
             .map_or(0, |pruned_until_version| match pruned_until_version {
-                PrunerMetadata::LatestVersion(version) => version,
+                DbMetadata::LatestVersion(version) => version,
             }))
     }
 

@@ -1,9 +1,9 @@
 // Copyright (c) Aptos
 // SPDX-License-Identifier: Apache-2.0
 
-use crate::pruner::pruner_metadata::PrunerMetadata;
+use crate::db_metadata::DbMetadataSchema;
 use crate::pruner::state_store::generics::StaleNodeIndexSchemaTrait;
-use crate::pruner_metadata::PrunerMetadataSchema;
+use crate::schema::db_metadata::DbMetadata;
 use crate::{
     jellyfish_merkle_node::JellyfishMerkleNodeSchema, metrics::PRUNER_LEAST_READABLE_VERSION,
     pruner::db_pruner::DBPruner, utils, StaleNodeIndexCrossEpochSchema, OTHER_TIMERS_SECONDS,
@@ -71,9 +71,9 @@ where
     fn initialize_min_readable_version(&self) -> Result<Version> {
         Ok(self
             .state_merkle_db
-            .get::<PrunerMetadataSchema>(&S::tag())?
+            .get::<DbMetadataSchema>(&S::tag())?
             .map_or(0, |pruned_until_version| match pruned_until_version {
-                PrunerMetadata::LatestVersion(version) => version,
+                DbMetadata::LatestVersion(version) => version,
             }))
     }
 
@@ -157,9 +157,9 @@ where
                     batch.delete::<S>(&index)
                 })?;
 
-                batch.put::<PrunerMetadataSchema>(
+                batch.put::<DbMetadataSchema>(
                     &S::tag(),
-                    &PrunerMetadata::LatestVersion(new_min_readable_version),
+                    &DbMetadata::LatestVersion(new_min_readable_version),
                 )?;
 
                 // Commit to DB.
