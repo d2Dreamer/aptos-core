@@ -40,6 +40,7 @@ use move_deps::{
 };
 use std::sync::Arc;
 
+
 #[derive(Clone)]
 /// A wrapper to make VMRuntime standalone and thread safe.
 pub struct AptosVMImpl {
