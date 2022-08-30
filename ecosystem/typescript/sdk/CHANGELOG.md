@@ -6,7 +6,7 @@ All notable changes to the Aptos Node SDK will be captured in this file. This ch
 
 ## Unreleased
 
-- Add an interface to publish Move packages.
+- **[Breaking Change]** ModuleBundle transaction support is removed. Instead, SDK users should use `AptosClient.publishPackage` to publish Move packages.
 
 ## 1.3.10 (2022-08-26)
 
