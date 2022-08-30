@@ -6,8 +6,7 @@ use crate::{
     node_type::{LeafNode, Node, NodeKey},
     restore::StateSnapshotRestore,
     test_helper::{init_mock_db, ValueBlob},
-    JellyfishMerkleTree, NodeBatch, StateValueBatch, StateValueWriter, TestKey, TestValue,
-    TreeReader, TreeWriter,
+    JellyfishMerkleTree, NodeBatch, TestKey, TestValue, TreeReader, TreeWriter,
 };
 use anyhow::Result;
 use aptos_crypto::{hash::CryptoHash, HashValue};
@@ -15,7 +14,10 @@ use aptos_infallible::RwLock;
 use aptos_types::transaction::Version;
 use proptest::{collection::btree_map, prelude::*};
 use std::{collections::BTreeMap, sync::Arc};
-use storage_interface::StateSnapshotReceiver;
+use storage_interface::{
+    state_value_writer::{StateValueBatch, StateValueWriter},
+    StateSnapshotReceiver,
+};
 
 #[derive(Default)]
 struct MockSnapshotStore<K: TestKey, V: TestValue> {

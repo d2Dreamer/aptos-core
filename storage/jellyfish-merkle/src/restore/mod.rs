@@ -12,7 +12,7 @@ use crate::{
         get_child_and_sibling_half_start, Child, Children, InternalNode, LeafNode, Node, NodeKey,
         NodeType,
     },
-    NibbleExt, StateValueWriter, TreeReader, TreeWriter, ROOT_NIBBLE_HEIGHT,
+    NibbleExt, TreeReader, TreeWriter, ROOT_NIBBLE_HEIGHT,
 };
 use anyhow::{ensure, Result};
 use aptos_crypto::{
@@ -30,7 +30,7 @@ use aptos_types::{
 };
 use itertools::Itertools;
 use std::{cmp::Eq, collections::HashMap, hash::Hash, sync::Arc};
-use storage_interface::StateSnapshotReceiver;
+use storage_interface::{state_value_writer::StateValueWriter, StateSnapshotReceiver};
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 enum ChildInfo<K> {

@@ -144,13 +144,6 @@ pub trait TreeWriter<K>: Send + Sync {
     fn write_node_batch(&self, node_batch: &HashMap<NodeKey, Node<K>>) -> Result<()>;
 }
 
-pub trait StateValueWriter<K, V>: Send + Sync {
-    /// Writes a kv batch into storage.
-    fn write_kv_batch(&self, kv_batch: &StateValueBatch<K, Option<V>>) -> Result<()>;
-
-    fn write_usage(&self, version: Version, items: usize, total_bytes: usize) -> Result<()>;
-}
-
 pub trait Key: Clone + Serialize + DeserializeOwned + Send + Sync {
     fn key_size(&self) -> usize;
 }
@@ -190,8 +183,6 @@ impl TestKey for StateKey {}
 
 /// Node batch that will be written into db atomically with other batches.
 pub type NodeBatch<K> = HashMap<NodeKey, Node<K>>;
-/// Key-Value batch that will be written into db atomically with other batches.
-pub type StateValueBatch<K, V> = HashMap<(K, Version), V>;
 
 #[derive(Clone, Debug, Default, Eq, PartialEq)]
 pub struct NodeStats {

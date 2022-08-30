@@ -20,9 +20,7 @@ use aptos_crypto::{
     HashValue,
 };
 use aptos_infallible::Mutex;
-use aptos_jellyfish_merkle::{
-    iterator::JellyfishMerkleIterator, restore::StateSnapshotRestore, StateValueWriter,
-};
+use aptos_jellyfish_merkle::{iterator::JellyfishMerkleIterator, restore::StateSnapshotRestore};
 use aptos_logger::info;
 use aptos_state_view::{state_storage_usage::StateStorageUsage, StateViewId};
 use aptos_types::{
@@ -44,7 +42,8 @@ use std::{
 };
 use storage_interface::{
     cached_state_view::CachedStateView, state_delta::StateDelta,
-    sync_proof_fetcher::SyncProofFetcher, DbReader, StateSnapshotReceiver,
+    state_value_writer::StateValueWriter, sync_proof_fetcher::SyncProofFetcher, DbReader,
+    StateSnapshotReceiver,
 };
 
 pub(crate) mod buffered_state;
@@ -54,7 +53,8 @@ mod state_snapshot_committer;
 #[cfg(test)]
 mod state_store_test;
 
-type StateValueBatch = aptos_jellyfish_merkle::StateValueBatch<StateKey, Option<StateValue>>;
+type StateValueBatch =
+    storage_interface::state_value_writer::StateValueBatch<StateKey, Option<StateValue>>;
 
 pub const MAX_VALUES_TO_FETCH_FOR_KEY_PREFIX: usize = 10_000;
 // We assume TARGET_SNAPSHOT_INTERVAL_IN_VERSION > block size.

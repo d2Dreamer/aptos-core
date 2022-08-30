@@ -17,9 +17,7 @@ use aptos_config::config::{
 };
 use aptos_crypto::HashValue;
 use aptos_infallible::duration_since_epoch;
-use aptos_jellyfish_merkle::{
-    restore::StateSnapshotRestore, NodeBatch, StateValueBatch, StateValueWriter, TreeWriter,
-};
+use aptos_jellyfish_merkle::{restore::StateSnapshotRestore, NodeBatch, TreeWriter};
 use aptos_types::{
     state_store::{state_key::StateKey, state_value::StateValue},
     transaction::Version,
@@ -33,6 +31,7 @@ use std::{
     path::{Path, PathBuf},
     sync::Arc,
 };
+use storage_interface::state_value_writer::{StateValueBatch, StateValueWriter};
 use structopt::StructOpt;
 use tokio::fs::metadata;
 

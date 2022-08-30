@@ -45,6 +45,7 @@ mod metrics;
 pub mod mock;
 pub mod proof_fetcher;
 pub mod state_delta;
+pub mod state_value_writer;
 pub mod state_view;
 pub mod sync_proof_fetcher;
 
